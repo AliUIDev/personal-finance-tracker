@@ -153,8 +153,7 @@ const BudgetPlanning = () => {
     <div className="budget-planning-page">
       <div className="budget-planning-shell">
         <button type="button" className="budget-back-btn" onClick={handleBack}>
-          <ArrowLeft size={18} />
-          <span>Back to Dashboard</span>
+          <ArrowLeft size={20} />
         </button>
 
         <header className="budget-planning-header">

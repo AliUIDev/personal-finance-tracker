@@ -3,44 +3,62 @@ import budgetBeeLogo from "../../assets/images/Logo4.png";
 import rightPanelImage from "../../assets/images/Logo3.png";
 import "./Landing.css";
 
-export default function Home() {
+export default function Landing() {
   return (
-    <div className="home-page-container">
-      <div className="home-page-content">
-        <div className="left-side-section">
-          <div className="logo-panel">
-            <img src={budgetBeeLogo} alt="BudgetBee Logo" className="logo" />
-            <h1 className="appName">BudgetBee</h1>
+    <main className="landing-page">
+      <section className="landing-content">
+        <div className="landing-left">
+          <div className="landing-brand">
+            <img src={budgetBeeLogo} alt="BudgetBee logo" className="landing-logo" />
+            <h1>BudgetBee</h1>
           </div>
 
-          <h2 className="description-title">Your personal finance tracker</h2>
+          <div className="landing-copy">
+            <span className="landing-badge">Personal finance workspace</span>
 
-          <p className="description">
-            Personal expense tracker is your ultimate tool for effortless income and expense management.
-            Streamline your financial tracking with intuitive categorization and insightful reports.
-            Personal expense tracker is a meticulously designed application tailored to simplify your financial life.
-            This user-centric platform empowers you to efficiently track and manage your finances with ease and precision.
-          </p>
+            <h2>Track your money with clarity and control.</h2>
 
-          <div className="button-container">
-            <Link to="/login">
-              <button className="home-page-login-btn">Login</button>
+            <p>
+              BudgetBee helps you organize income, expenses, categories, and monthly
+              budgets in one clean dashboard. Stay aware of your spending, understand
+              where your money goes, and make better financial decisions with less effort.
+            </p>
+          </div>
+
+          <div className="landing-actions">
+            <Link to="/login" className="landing-primary-btn">
+              Login
             </Link>
 
-            <Link to="/signup">
-              <button className="home-page-create-btn">Create Account</button>
+            <Link to="/signup" className="landing-secondary-btn">
+              Create Account
             </Link>
+          </div>
+
+          <div className="landing-highlights">
+            <div>
+              <strong>Monthly budget</strong>
+              <span>Plan and monitor limits</span>
+            </div>
+
+            <div>
+              <strong>Smart categories</strong>
+              <span>Understand your spending</span>
+            </div>
+
+            <div>
+              <strong>Clear reports</strong>
+              <span>See progress at a glance</span>
+            </div>
           </div>
         </div>
 
-        <div className="right-side-section">
-          <img
-            src={rightPanelImage}
-            alt="rightPanelImage"
-            className="rightPanelImage"
-          />
+        <div className="landing-right" aria-hidden="true">
+          <div className="landing-visual-card">
+            <img src={rightPanelImage} alt="" className="landing-hero-image" />
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

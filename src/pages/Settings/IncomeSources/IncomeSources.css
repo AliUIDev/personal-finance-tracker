@@ -18,23 +18,29 @@
   position: absolute;
   top: 4px;
   left: 0;
-  width: 46px;
-  height: 46px;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.94);
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: #0f172a;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
-  transition: 0.2s ease;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .income-back-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
+  background: #ffffff;
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
 }
 
 .income-header {
@@ -356,6 +362,9 @@
 
   .income-back-btn {
     position: static;
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
     margin-bottom: 18px;
   }
 
@@ -392,6 +401,13 @@
 }
 
 @media screen and (max-width: 520px) {
+  .income-back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+
   .income-header h1 {
     font-size: 2.3rem;
   }
