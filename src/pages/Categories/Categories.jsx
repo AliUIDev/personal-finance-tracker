@@ -1,8 +1,11 @@
-import { useState, useEffect } from "react";
-import mockTransactions from "../../data/mock_transactions.json";
-import { getTransactions, saveTransactions } from "../../services/storage";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import mockTransactions from "../../data/mock_transactions.json";
+import { getTransactions, saveTransactions } from "../../services/storage";
+import CategoryTabs from "./components/CategoryTabs/CategoryTabs";
+import QuickAddTransaction from "./components/QuickAddTransaction/QuickAddTransaction";
+import TransactionsTable from "./components/TransactionsTable/TransactionsTable";
 import "./Categories.css";
 
 const categoryTypes = {
@@ -25,7 +28,16 @@ const initialCategories = [
   "Other",
 ];
 
+const paymentMethods = ["Cash", "Apple Pay", "Google Pay", "QR Pay"];
+
 const getTodayDate = () => new Date().toISOString().split("T")[0];
+
+const normalizeBankTransactions = (transactions) =>
+  transactions.map((transaction) => ({
+    ...transaction,
+    source: "bank",
+    paymentMethod: "Bank Sync",
+  }));
 
 const Categories = () => {
   const navigate = useNavigate();
@@ -39,20 +51,34 @@ const Categories = () => {
   const [newTransactionAmount, setNewTransactionAmount] = useState("");
   const [newTransactionDescription, setNewTransactionDescription] = useState("");
   const [newTransactionDate, setNewTransactionDate] = useState(getTodayDate());
+  const [newPaymentMethod, setNewPaymentMethod] = useState("Cash");
+  const [editingId, setEditingId] = useState(null);
+  const [editData, setEditData] = useState({});
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
     const stored = getTransactions();
-    setTransactions([...mockTransactions, ...stored]);
+    const bankTransactions = normalizeBankTransactions(mockTransactions);
+
+    setTransactions([...bankTransactions, ...stored]);
   }, []);
 
   useEffect(() => {
     setNewTransactionType(categoryTypes[selectedCategory][0]);
     setNewTransactionDate(getTodayDate());
+    setNewPaymentMethod("Cash");
   }, [selectedCategory]);
 
   const filteredTransactions = transactions
     .filter((transaction) => transaction.category === selectedCategory)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const syncStoredTransactions = (updatedStoredTransactions) => {
+    const bankTransactions = normalizeBankTransactions(mockTransactions);
+
+    saveTransactions(updatedStoredTransactions);
+    setTransactions([...bankTransactions, ...updatedStoredTransactions]);
+  };
 
   const handleBack = () => {
     navigate("/dashboard");
@@ -83,18 +109,98 @@ const Categories = () => {
         newTransactionDescription.trim() ||
         `${newTransactionType} added to ${selectedCategory}`,
       source: "manual",
+      paymentMethod: newPaymentMethod,
       createdAt: Date.now(),
     };
 
     const updatedStoredTransactions = [...storedTransactions, newTransaction];
 
-    saveTransactions(updatedStoredTransactions);
-    setTransactions([...mockTransactions, ...updatedStoredTransactions]);
+    syncStoredTransactions(updatedStoredTransactions);
 
     setNewTransactionType(categoryTypes[selectedCategory][0]);
     setNewTransactionAmount("");
     setNewTransactionDescription("");
     setNewTransactionDate(getTodayDate());
+    setNewPaymentMethod("Cash");
+  };
+
+  const handleStartEdit = (transaction) => {
+    setEditingId(transaction.id);
+    setEditData({
+      type: transaction.type,
+      amount: String(transaction.amount),
+      date: transaction.date,
+      description: transaction.description || "",
+      paymentMethod: transaction.paymentMethod || "Cash",
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditData({});
+  };
+
+  const handleEditChange = (field, value) => {
+    setEditData((currentData) => ({
+      ...currentData,
+      [field]: value,
+    }));
+  };
+
+  const handleSaveEdit = (transactionId) => {
+    const amount = Number(editData.amount);
+
+    if (!editData.amount || Number.isNaN(amount) || amount <= 0) {
+      alert("Amount must be greater than 0");
+      return;
+    }
+
+    const storedTransactions = getTransactions();
+
+    const updatedStoredTransactions = storedTransactions.map((transaction) =>
+      transaction.id === transactionId
+        ? {
+            ...transaction,
+            type: editData.type,
+            amount,
+            date: editData.date,
+            description:
+              editData.description.trim() ||
+              `${editData.type} added to ${transaction.category}`,
+            paymentMethod: editData.paymentMethod,
+            updatedAt: Date.now(),
+          }
+        : transaction
+    );
+
+    syncStoredTransactions(updatedStoredTransactions);
+    handleCancelEdit();
+  };
+
+  const handleRequestDelete = (transaction) => {
+    setDeleteTarget(transaction);
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteTarget(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+
+    const storedTransactions = getTransactions();
+
+    const updatedStoredTransactions = storedTransactions.filter(
+      (transaction) => transaction.id !== deleteTarget.id
+    );
+
+    syncStoredTransactions(updatedStoredTransactions);
+
+    if (editingId === deleteTarget.id) {
+      handleCancelEdit();
+    }
+
+    setDeleteTarget(null);
   };
 
   return (
@@ -108,19 +214,11 @@ const Categories = () => {
           </p>
         </div>
 
-        <div className="categories-list">
-          {categories.map((category) => (
-            <button
-              key={category}
-              className={`category-btn ${
-                selectedCategory === category ? "active" : ""
-              }`}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
+        <CategoryTabs
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
 
         <section className="transactions-section">
           <div className="transactions-top-bar">
@@ -145,74 +243,23 @@ const Categories = () => {
             </button>
           </div>
 
-          <div className="quick-add-card">
-            <div className="add-transaction-form">
-              <label>
-                <span>Type</span>
-                <select
-                  value={newTransactionType}
-                  onChange={(event) =>
-                    setNewTransactionType(event.target.value)
-                  }
-                >
-                  {categoryTypes[selectedCategory].map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label>
-                <span>Amount</span>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={newTransactionAmount}
-                  placeholder="$0.00"
-                  onChange={(event) => {
-                    const value = event.target.value;
-
-                    if (/^\d*\.?\d{0,2}$/.test(value)) {
-                      setNewTransactionAmount(value);
-                    }
-                  }}
-                />
-              </label>
-
-              <label>
-                <span>Date</span>
-                <input
-                  type="date"
-                  max={getTodayDate()}
-                  value={newTransactionDate}
-                  onChange={(event) =>
-                    setNewTransactionDate(event.target.value)
-                  }
-                />
-              </label>
-
-              <label className="description-field">
-                <span>Description</span>
-                <input
-                  type="text"
-                  value={newTransactionDescription}
-                  placeholder="Optional note"
-                  onChange={(event) =>
-                    setNewTransactionDescription(event.target.value)
-                  }
-                />
-              </label>
-
-              <button
-                type="button"
-                className="add-category-btn"
-                onClick={handleAddTransaction}
-              >
-                Add
-              </button>
-            </div>
-          </div>
+          <QuickAddTransaction
+            selectedCategory={selectedCategory}
+            transactionTypes={categoryTypes[selectedCategory]}
+            paymentMethods={paymentMethods}
+            newTransactionType={newTransactionType}
+            newTransactionAmount={newTransactionAmount}
+            newTransactionDate={newTransactionDate}
+            newTransactionDescription={newTransactionDescription}
+            newPaymentMethod={newPaymentMethod}
+            todayDate={getTodayDate()}
+            onTypeChange={setNewTransactionType}
+            onAmountChange={setNewTransactionAmount}
+            onDateChange={setNewTransactionDate}
+            onDescriptionChange={setNewTransactionDescription}
+            onPaymentMethodChange={setNewPaymentMethod}
+            onAddTransaction={handleAddTransaction}
+          />
 
           <div className="table-header-row">
             <div>
@@ -223,53 +270,61 @@ const Categories = () => {
             </div>
           </div>
 
-          <div className="transactions-table-wrapper">
-            <table className="transactions-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Type</th>
-                  <th>Amount</th>
-                  <th>Description</th>
-                  <th>Source</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {filteredTransactions.length > 0 ? (
-                  filteredTransactions.map((transaction) => (
-                    <tr key={transaction.id}>
-                      <td>{transaction.date}</td>
-                      <td>{transaction.type}</td>
-                      <td>${Number(transaction.amount).toFixed(2)}</td>
-                      <td>{transaction.description}</td>
-                      <td>
-                        <span
-                          className={`source-badge ${
-                            transaction.source === "manual"
-                              ? "manual"
-                              : "bank"
-                          }`}
-                        >
-                          {transaction.source === "manual"
-                            ? "Manual"
-                            : "Bank"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="5" className="empty-row">
-                      No transactions yet for {selectedCategory}.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+          <TransactionsTable
+            transactions={filteredTransactions}
+            selectedCategory={selectedCategory}
+            transactionTypes={categoryTypes[selectedCategory]}
+            paymentMethods={paymentMethods}
+            editingId={editingId}
+            editData={editData}
+            todayDate={getTodayDate()}
+            onStartEdit={handleStartEdit}
+            onCancelEdit={handleCancelEdit}
+            onEditChange={handleEditChange}
+            onSaveEdit={handleSaveEdit}
+            onDeleteTransaction={handleRequestDelete}
+          />
         </section>
       </div>
+
+      {deleteTarget && (
+        <div className="category-delete-overlay">
+          <div className="category-delete-modal">
+            <button
+              type="button"
+              className="category-delete-close"
+              onClick={handleCancelDelete}
+            >
+              ×
+            </button>
+
+            <h3>Delete this transaction?</h3>
+
+            <p>
+              This will permanently remove this transaction from your BudgetBee
+              workspace. This action cannot be undone.
+            </p>
+
+            <div className="category-delete-actions">
+              <button
+                type="button"
+                className="category-delete-confirm"
+                onClick={handleConfirmDelete}
+              >
+                Yes, Delete
+              </button>
+
+              <button
+                type="button"
+                className="category-delete-cancel"
+                onClick={handleCancelDelete}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
