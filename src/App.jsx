@@ -3,7 +3,7 @@ import Login from "./pages/Login/Login.jsx";
 import Landing from "./pages/Landing/Landing.jsx";
 import Signup from "./pages/Signup/Signup.jsx";
 import ProfileSettings from "./pages/Settings/Profile/ProfileSettings.jsx";
-import IncomeSources from "./pages/Settings/IncomeSources/IncomeSources.jsx";
+import IncomeSources from "./pages/IncomeSources/IncomeSources.jsx";
 import Categories from "./pages/Categories/Categories.jsx";
 import NotFound from "./pages/NotFound/NotFound.jsx";
 import Dashboard from "./pages/Dashboard/Dashboard.jsx";

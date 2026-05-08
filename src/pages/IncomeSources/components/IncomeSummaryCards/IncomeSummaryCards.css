@@ -1,0 +1,43 @@
+.income-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.income-summary-card {
+  background:
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.07), transparent 34%),
+    rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  border-radius: 24px;
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.08);
+  padding: 22px;
+}
+
+.income-summary-card span {
+  display: block;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 850;
+  margin-bottom: 8px;
+}
+
+.income-summary-card strong {
+  color: #0f172a;
+  font-size: 1.85rem;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+@media screen and (max-width: 860px) {
+  .income-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .income-summary-card strong {
+    font-size: 1.45rem;
+  }
+}

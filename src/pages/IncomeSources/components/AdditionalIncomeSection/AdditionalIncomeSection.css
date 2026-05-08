@@ -1,0 +1,132 @@
+.additional-income-section {
+    overflow: hidden;
+}
+
+.additional-income-open-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: #ffffff;
+    padding: 12px 18px;
+    min-width: 220px;
+    font-size: 0.93rem;
+    font-weight: 850;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.16);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+    margin: 2px 0 22px 6px;
+}
+
+.additional-income-open-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
+}
+
+.additional-income-form {
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.1), transparent 34%),
+        #f8fafc;
+    padding: 20px;
+    margin-bottom: 22px;
+}
+
+.additional-income-form-top {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.additional-income-form-top strong {
+    color: #0f172a;
+    font-size: 1.05rem;
+    font-weight: 950;
+}
+
+.additional-income-form-top button {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 12px;
+    background: #e2e8f0;
+    color: #334155;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.additional-income-form-top button:hover {
+    background: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.additional-income-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    align-items: stretch;
+}
+
+.additional-income-empty {
+    grid-column: 1 / -1;
+    border: 1px dashed #cbd5e1;
+    border-radius: 22px;
+    background:
+        radial-gradient(circle at top, rgba(37, 99, 235, 0.06), transparent 34%),
+        #f8fafc;
+    padding: 30px;
+    text-align: center;
+}
+
+.additional-income-empty h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.15rem;
+    font-weight: 950;
+    letter-spacing: -0.03em;
+}
+
+.additional-income-empty p {
+    max-width: 520px;
+    margin: 10px auto 0;
+    color: #64748b;
+    font-size: 0.94rem;
+    line-height: 1.6;
+}
+
+@media screen and (max-width: 980px) {
+    .additional-income-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media screen and (max-width: 860px) {
+    .additional-income-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .additional-income-form-top {
+        grid-column: auto;
+    }
+}
+
+@media screen and (max-width: 520px) {
+    .additional-income-open-btn {
+        width: 100%;
+        min-width: 0;
+    }
+}
