@@ -1,39 +1,65 @@
 .planning-budget-card {
   width: 100%;
-  min-height: 150px;
+  min-height: 142px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 22px;
-  padding: 24px;
+  border-radius: 24px;
+  padding: 26px 30px;
   box-sizing: border-box;
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.06);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  gap: 24px;
   margin: 0;
 }
 
 .planning-budget-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 42px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.08);
+}
+
+.planning-budget-card-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.planning-budget-card.budget .planning-budget-card-icon {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.planning-budget-card.spent .planning-budget-card-icon {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.planning-budget-card.remaining .planning-budget-card-icon {
+  background: #eff6ff;
+  color: #2563eb;
 }
 
 .planning-budget-card p {
-  margin: 0 0 10px;
+  margin: 0 0 9px;
   color: #64748b;
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .planning-budget-card h2 {
   margin: 0;
-  font-size: 1.9rem;
+  font-size: 1.85rem;
   font-weight: 900;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.045em;
   color: #0f172a;
+  line-height: 1;
 }
 
 .planning-budget-card.budget h2 {
@@ -51,14 +77,20 @@
 .planning-budget-card.featured-card {
   border: 1px solid #dbeafe;
   background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-  box-shadow: 0 18px 38px rgba(37, 99, 235, 0.08);
+  box-shadow: 0 20px 42px rgba(37, 99, 235, 0.08);
 }
 
 @media (max-width: 480px) {
   .planning-budget-card {
-    min-height: 130px;
+    min-height: 126px;
     padding: 18px;
     border-radius: 18px;
+    gap: 16px;
+  }
+
+  .planning-budget-card-icon {
+    width: 46px;
+    height: 46px;
   }
 
   .planning-budget-card h2 {

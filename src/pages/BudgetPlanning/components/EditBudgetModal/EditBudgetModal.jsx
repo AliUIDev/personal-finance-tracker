@@ -1,14 +1,10 @@
 import { useState } from "react";
+import { RotateCcw, Save, SlidersHorizontal, X } from "lucide-react";
 import { useCurrentUser } from "../../../../hooks/useCurrentUser";
 import { formatCurrency } from "../../../../utils/currency";
 import "./EditBudgetModal.css";
 
-const EditBudgetModal = ({
-  limits,
-  recommendedLimits,
-  onClose,
-  onSave,
-}) => {
+const EditBudgetModal = ({ limits, recommendedLimits, onClose, onSave }) => {
   const currentUser = useCurrentUser();
   const currency = currentUser?.currency || "USD";
 
@@ -43,17 +39,20 @@ const EditBudgetModal = ({
     <div className="budget-modal-overlay">
       <div className="budget-modal">
         <div className="budget-modal-header">
-          <div>
-            <p>Edit Limits</p>
-            <h3>Category Budgets</h3>
+          <div className="budget-modal-title-row">
+            <span className="budget-modal-icon">
+              <SlidersHorizontal size={18} />
+            </span>
+
+            <div>
+              <p>Edit Limits</p>
+              <h3>Category Spending Limits</h3>
+              <span>Adjust how much you plan to spend in each category.</span>
+            </div>
           </div>
 
-          <button
-            type="button"
-            className="modal-close-btn"
-            onClick={onClose}
-          >
-            x
+          <button type="button" className="modal-close-btn" onClick={onClose}>
+            <X size={18} />
           </button>
         </div>
 
@@ -65,9 +64,7 @@ const EditBudgetModal = ({
                 type="text"
                 inputMode="decimal"
                 value={value}
-                onChange={(event) =>
-                  handleChange(category, event.target.value)
-                }
+                onChange={(event) => handleChange(category, event.target.value)}
                 placeholder={formatCurrency(
                   recommendedLimits?.[category] || 0,
                   currency
@@ -80,27 +77,23 @@ const EditBudgetModal = ({
         <div className="budget-modal-actions">
           <button
             type="button"
-            className="modal-cancel-btn"
+            className="modal-reset-btn"
             onClick={handleResetRecommended}
           >
+            <RotateCcw size={15} />
             Reset Recommended
           </button>
 
-          <button
-            type="button"
-            className="modal-cancel-btn"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
+          <div className="modal-action-group">
+            <button type="button" className="modal-cancel-btn" onClick={onClose}>
+              Cancel
+            </button>
 
-          <button
-            type="button"
-            className="modal-save-btn"
-            onClick={handleSave}
-          >
-            Save Limits
-          </button>
+            <button type="button" className="modal-save-btn" onClick={handleSave}>
+              <Save size={15} />
+              Save Limits
+            </button>
+          </div>
         </div>
       </div>
     </div>

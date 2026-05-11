@@ -26,7 +26,7 @@
   flex: 1;
 }
 
-.dashboard-content > * {
+.dashboard-content>* {
   min-width: 0;
 }
 
@@ -45,7 +45,7 @@
 }
 
 .line-chart,
-.pie-section {
+.category-section {
   width: 100%;
   background: #ffffff;
   border-radius: 20px;
@@ -53,15 +53,16 @@
   border: 1px solid #e2e8f0;
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
   box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.pie-section {
+.category-section {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.pie-bottom {
+.category-bottom {
   display: flex;
   gap: 16px;
   background: transparent;
@@ -78,7 +79,7 @@
 
 .charts,
 .side-content,
-.pie-bottom,
+.category-bottom,
 .calendar-summary,
 .transaction-item {
   min-width: 0;
@@ -96,27 +97,10 @@
   gap: 24px;
 }
 
-.calendar-box,
-.calendar-details {
-  border-radius: 16px;
-  padding: 16px;
-}
-
-.calendar-box {
-  background: #f8fafc;
-}
-
-.calendar-details {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-}
-
 .line-chart:hover,
-.pie-section:hover {
+.category-section:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
-  transition: all 0.2s ease;
 }
 
 @media (max-width: 1024px) {
@@ -146,7 +130,7 @@
     font-size: 18px;
   }
 
-  .pie-section {
+  .category-section {
     gap: 16px;
   }
 }
@@ -157,7 +141,7 @@
   }
 
   .line-chart,
-  .pie-section {
+  .category-section {
     padding: 16px;
     border-radius: 18px;
   }

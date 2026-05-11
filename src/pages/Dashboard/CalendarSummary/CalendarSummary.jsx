@@ -41,12 +41,15 @@ function CalendarSummary() {
   const formatDayAmount = (amount) => {
     const value = Number(amount) || 0;
 
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-      notation: value >= 1000 ? "compact" : "standard",
-      maximumFractionDigits: value >= 1000 ? 1 : 0,
-    }).format(value);
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(value >= 10000000 ? 0 : 1)}M`;
+    }
+
+    if (value >= 1000) {
+      return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}K`;
+    }
+
+    return Math.round(value).toString();
   };
 
   const year = currentMonth.getFullYear();
@@ -132,13 +135,12 @@ function CalendarSummary() {
             return (
               <div
                 key={day}
-                className={`calendar-day ${isSelected ? "active" : ""} ${
-                  day === today.getDate() &&
-                  month === today.getMonth() &&
-                  year === today.getFullYear()
+                className={`calendar-day ${isSelected ? "active" : ""} ${day === today.getDate() &&
+                    month === today.getMonth() &&
+                    year === today.getFullYear()
                     ? "today"
                     : ""
-                }`}
+                  }`}
                 onClick={() => setSelectedDate(new Date(year, month, day))}
               >
                 <div className="day-number">{day}</div>
@@ -176,9 +178,8 @@ function CalendarSummary() {
           <div
             className="progress-fill"
             style={{
-              width: `${
-                budget > 0 ? Math.min((totalSpent / budget) * 100, 100) : 0
-              }%`,
+              width: `${budget > 0 ? Math.min((totalSpent / budget) * 100, 100) : 0
+                }%`,
             }}
           />
         </div>

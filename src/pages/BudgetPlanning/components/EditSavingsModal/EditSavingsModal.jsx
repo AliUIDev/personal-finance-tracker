@@ -1,14 +1,10 @@
 import { useState } from "react";
+import { PiggyBank, RotateCcw, Save, X } from "lucide-react";
 import { useCurrentUser } from "../../../../hooks/useCurrentUser";
 import { formatCurrency } from "../../../../utils/currency";
 import "./EditSavingsModal.css";
 
-function EditSavingsModal({
-  goal,
-  recommendedGoal,
-  onClose,
-  onSave,
-}) {
+function EditSavingsModal({ goal, recommendedGoal, onClose, onSave }) {
   const currentUser = useCurrentUser();
   const currency = currentUser?.currency || "USD";
 
@@ -55,9 +51,16 @@ function EditSavingsModal({
     <div className="savings-modal-overlay">
       <div className="savings-modal">
         <div className="savings-modal-header">
-          <div>
-            <p className="modal-label">Edit Goal</p>
-            <h3>Monthly Savings Target</h3>
+          <div className="savings-modal-title-row">
+            <span className="savings-modal-icon">
+              <PiggyBank size={18} />
+            </span>
+
+            <div>
+              <p className="modal-label">Edit Goal</p>
+              <h3>Monthly Savings Target</h3>
+              <span>Set the amount you want to keep aside this month.</span>
+            </div>
           </div>
 
           <button
@@ -66,7 +69,7 @@ function EditSavingsModal({
             onClick={onClose}
             aria-label="Close modal"
           >
-            x
+            <X size={18} />
           </button>
         </div>
 
@@ -96,11 +99,7 @@ function EditSavingsModal({
           </label>
         </div>
 
-        {error && (
-          <p className="modal-error-text">
-            {error}
-          </p>
-        )}
+        {error && <p className="modal-error-text">{error}</p>}
 
         <div className="savings-modal-actions">
           <button
@@ -108,24 +107,20 @@ function EditSavingsModal({
             className="modal-secondary-btn"
             onClick={handleResetRecommended}
           >
+            <RotateCcw size={15} />
             Reset Recommended
           </button>
 
-          <button
-            type="button"
-            className="modal-cancel-btn"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
+          <div className="savings-modal-action-group">
+            <button type="button" className="modal-cancel-btn" onClick={onClose}>
+              Cancel
+            </button>
 
-          <button
-            type="button"
-            className="modal-save-btn"
-            onClick={handleSave}
-          >
-            Save Goal
-          </button>
+            <button type="button" className="modal-save-btn" onClick={handleSave}>
+              <Save size={15} />
+              Save Goal
+            </button>
+          </div>
         </div>
       </div>
     </div>

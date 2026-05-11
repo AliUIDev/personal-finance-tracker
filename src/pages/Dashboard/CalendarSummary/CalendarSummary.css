@@ -36,12 +36,16 @@
 }
 
 .calendar-header button {
-  background: rgba(241, 245, 249, 0.7);
+  width: 34px;
+  height: 34px;
+  background: rgba(241, 245, 249, 0.72);
   border: none;
-  padding: 6px 12px;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .calendar-header button:hover {
@@ -50,12 +54,13 @@
 
 .calendar-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 10px;
 }
 
 .calendar-day {
-  height: 72px;
+  height: 74px;
+  min-width: 0;
   border-radius: 16px;
   background: rgba(241, 245, 249, 0.72);
   border: 1px solid transparent;
@@ -64,7 +69,8 @@
   justify-content: space-between;
   padding: 10px;
   cursor: pointer;
-  transition: all 0.18s ease;
+  overflow: hidden;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 .calendar-day:hover {
@@ -73,19 +79,19 @@
 }
 
 .calendar-day:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 
 .calendar-day.today {
-  border: 1px solid rgba(37, 99, 235, 0.45);
+  border-color: rgba(37, 99, 235, 0.42);
   background: rgba(239, 246, 255, 0.85);
 }
 
 .calendar-day.active {
   background: linear-gradient(135deg, #2563eb, #1e40af);
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.26);
+  border-color: rgba(255, 255, 255, 0.34);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
 }
 
 .calendar-day.active.today {
@@ -96,21 +102,23 @@
   font-size: 13px;
   font-weight: 700;
   line-height: 1;
+  color: #0f172a;
 }
 
 .day-amount {
-  font-size: 0.7rem;
+  max-width: 100%;
+  font-size: 10.5px;
   line-height: 1;
-  margin-top: 2px;
   color: #475569;
-  text-align: right;
-  font-weight: 600;
-  opacity: 0.86;
+  text-align: left;
+  font-weight: 700;
+  opacity: 0.82;
+  white-space: nowrap;
 }
 
 .calendar-day.active .day-amount,
 .calendar-day.active .day-number {
-  color: rgba(255, 255, 255, 0.94);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .summary-box {
@@ -136,6 +144,7 @@
 .summary-row {
   display: flex;
   justify-content: space-between;
+  gap: 12px;
   font-size: 14px;
   font-weight: 500;
 }
@@ -143,6 +152,7 @@
 .summary-row strong {
   font-size: 1rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .summary-row.income {
@@ -199,6 +209,10 @@
 
 .day-item span {
   color: #334155;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .day-item strong {
@@ -217,10 +231,22 @@
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
+
+  .calendar-box,
+  .summary-box {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .calendar-grid {
+    gap: 8px;
+  }
+
   .calendar-day {
-    height: 62px;
-    padding: 6px;
+    height: 64px;
+    padding: 8px;
+    border-radius: 14px;
   }
 
   .day-number {
@@ -228,6 +254,21 @@
   }
 
   .day-amount {
-    font-size: 10px;
+    font-size: 9.5px;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendar-grid {
+    gap: 6px;
+  }
+
+  .calendar-day {
+    height: 58px;
+    padding: 7px 5px;
+  }
+
+  .day-amount {
+    font-size: 9px;
   }
 }

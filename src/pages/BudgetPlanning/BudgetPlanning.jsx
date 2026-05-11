@@ -1,11 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import {
-  getAllTransactions,
-  getBudgetPlan,
-  saveBudgetPlan,
-} from "../../services/storage";
+import { getAllTransactions, getBudgetPlan, saveBudgetPlan } from "../../services/storage";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { formatCurrency } from "../../utils/currency";
 import { isCurrentMonthToDate } from "../../utils/dateFilters";
@@ -18,49 +14,72 @@ import EditSavingsModal from "./components/EditSavingsModal/EditSavingsModal";
 import "./BudgetPlanning.css";
 
 const categoryWeights = {
-  Essentials: 0.28,
-  Lifestyle: 0.14,
+  Essentials: 0.42,
+  Lifestyle: 0.16,
   Health: 0.08,
-  Education: 0.1,
-  Travel: 0.1,
+  Education: 0.08,
+  Travel: 0.08,
   Family: 0.08,
   Other: 0.02,
 };
 
-const createRecommendedSavingsGoal = (monthlyBudget) => ({
+const getMonthlyIncome = (user) => {
+  const mainIncomeTotal = (user?.mainIncomeSources || []).reduce(
+    (total, income) => total + Number(income.monthlyIncome || 0),
+    0
+  );
+
+  const additionalIncomeTotal = (user?.additionalIncome || []).reduce(
+    (total, income) => total + Number(income.monthlyIncome || 0),
+    0
+  );
+
+  return mainIncomeTotal + additionalIncomeTotal;
+};
+
+const createRecommendedSavingsGoal = (monthlyIncome, plannedSpending) => ({
   title: "Monthly Savings",
-  target: Math.round(monthlyBudget * 0.2),
+  target: Math.round((monthlyIncome || plannedSpending) * 0.2),
 });
 
-const createDefaultBudgetPlan = (monthlyBudget) => ({
-  baseMonthlyBudget: monthlyBudget,
+const createDefaultBudgetPlan = (plannedSpending, monthlyIncome) => ({
+  baseMonthlyBudget: plannedSpending,
+  baseMonthlyIncome: monthlyIncome,
+  bufferTarget: Math.round(monthlyIncome * 0.1),
   categoryLimits: Object.fromEntries(
     Object.entries(categoryWeights).map(([category, weight]) => [
       category,
-      Math.round(monthlyBudget * weight),
+      Math.round(plannedSpending * weight),
     ])
   ),
-  savingsGoal: createRecommendedSavingsGoal(monthlyBudget),
+  savingsGoal: createRecommendedSavingsGoal(monthlyIncome, plannedSpending),
 });
 
 const BudgetPlanning = () => {
   const navigate = useNavigate();
   const currentUser = useCurrentUser();
   const currency = currentUser?.currency || "USD";
-  const monthlyBudget = Number(currentUser?.monthlyBudget ?? 0);
 
-  const recommendedSavingsGoal = createRecommendedSavingsGoal(monthlyBudget);
+  const monthlyIncome = getMonthlyIncome(currentUser);
+  const plannedSpending = Number(currentUser?.monthlyBudget ?? 0);
+  const bufferTarget = Math.round(monthlyIncome * 0.1);
+
+  const recommendedSavingsGoal = createRecommendedSavingsGoal(
+    monthlyIncome,
+    plannedSpending
+  );
 
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
   const [isSavingsModalOpen, setIsSavingsModalOpen] = useState(false);
 
   const [budgetPlan, setBudgetPlan] = useState(() => {
     const storedPlan = getBudgetPlan();
-    const defaultPlan = createDefaultBudgetPlan(monthlyBudget);
+    const defaultPlan = createDefaultBudgetPlan(plannedSpending, monthlyIncome);
 
     if (
       !storedPlan ||
-      storedPlan.baseMonthlyBudget !== monthlyBudget ||
+      storedPlan.baseMonthlyBudget !== plannedSpending ||
+      storedPlan.baseMonthlyIncome !== monthlyIncome ||
       !storedPlan.categoryLimits ||
       !storedPlan.savingsGoal
     ) {
@@ -95,15 +114,11 @@ const BudgetPlanning = () => {
     0
   );
 
-  const remainingBudget = monthlyBudget - totalSpent;
-  const availableToSave = Math.max(remainingBudget, 0);
+  const availableToSave = Math.max(monthlyIncome - totalSpent, 0);
 
   const savingsGoalProgress = {
     ...budgetPlan.savingsGoal,
-    saved: Math.min(
-      availableToSave,
-      Number(budgetPlan.savingsGoal?.target || 0)
-    ),
+    saved: Math.min(availableToSave, Number(budgetPlan.savingsGoal?.target || 0)),
   };
 
   const categorySpending = Object.keys(budgetPlan.categoryLimits).map(
@@ -123,36 +138,14 @@ const BudgetPlanning = () => {
     }
   );
 
-  const handleBack = () => {
-    navigate("/dashboard");
-  };
-
-  const handleSaveLimits = (updatedLimits) => {
-    const updatedPlan = {
-      ...budgetPlan,
-      categoryLimits: updatedLimits,
-    };
-
-    setBudgetPlan(updatedPlan);
-    saveBudgetPlan(updatedPlan);
-    setIsBudgetModalOpen(false);
-  };
-
-  const handleSaveSavingsGoal = (updatedGoal) => {
-    const updatedPlan = {
-      ...budgetPlan,
-      savingsGoal: updatedGoal,
-    };
-
-    setBudgetPlan(updatedPlan);
-    saveBudgetPlan(updatedPlan);
-    setIsSavingsModalOpen(false);
-  };
-
   return (
     <div className="budget-planning-page">
       <div className="budget-planning-shell">
-        <button type="button" className="budget-back-btn" onClick={handleBack}>
+        <button
+          type="button"
+          className="budget-back-btn"
+          onClick={() => navigate("/dashboard")}
+        >
           <ArrowLeft size={20} />
         </button>
 
@@ -160,51 +153,49 @@ const BudgetPlanning = () => {
           <p className="budget-planning-label">Budget Control</p>
           <h1>Budget Planning</h1>
           <p>
-            Set spending limits, monitor progress, and keep your monthly
-            finances under control.
+            Plan spending, protect savings, and keep a monthly buffer for
+            flexibility.
           </p>
         </header>
 
         <section className="budget-cards-grid">
           <BudgetCard
-            title="Monthly Budget"
-            value={formatCurrency(monthlyBudget, currency)}
+            title="Planned Spending"
+            value={formatCurrency(plannedSpending, currency)}
             type="budget"
           />
 
           <BudgetCard
-            title="Spent This Month"
-            value={formatCurrency(totalSpent, currency)}
+            title="Savings Target"
+            value={formatCurrency(budgetPlan.savingsGoal.target, currency)}
             type="spent"
           />
 
           <BudgetCard
-            title="Remaining"
-            value={formatCurrency(remainingBudget, currency)}
+            title="Monthly Buffer"
+            value={formatCurrency(bufferTarget, currency)}
             type="remaining"
             featured
           />
         </section>
 
         <section className="budget-main-grid">
-          <div className="budget-left-panel">
-            <BudgetProgress
-              categories={categorySpending}
-              onEditLimits={() => setIsBudgetModalOpen(true)}
-            />
-          </div>
+          <BudgetProgress
+            categories={categorySpending}
+            onEditLimits={() => setIsBudgetModalOpen(true)}
+          />
 
           <div className="budget-right-panel">
             <SavingsGoal
               goal={budgetPlan.savingsGoal}
-              monthlyBudget={monthlyBudget}
+              monthlyBudget={plannedSpending}
               totalSpent={totalSpent}
               onEditGoal={() => setIsSavingsModalOpen(true)}
             />
 
             <BudgetInsights
               totalSpent={totalSpent}
-              monthlyBudget={monthlyBudget}
+              monthlyBudget={plannedSpending}
               categories={categorySpending}
               savingsGoal={savingsGoalProgress}
             />
@@ -215,9 +206,21 @@ const BudgetPlanning = () => {
       {isBudgetModalOpen && (
         <EditBudgetModal
           limits={budgetPlan.categoryLimits}
-          recommendedLimits={createDefaultBudgetPlan(monthlyBudget).categoryLimits}
+          recommendedLimits={
+            createDefaultBudgetPlan(plannedSpending, monthlyIncome)
+              .categoryLimits
+          }
           onClose={() => setIsBudgetModalOpen(false)}
-          onSave={handleSaveLimits}
+          onSave={(updatedLimits) => {
+            const updatedPlan = {
+              ...budgetPlan,
+              categoryLimits: updatedLimits,
+            };
+
+            setBudgetPlan(updatedPlan);
+            saveBudgetPlan(updatedPlan);
+            setIsBudgetModalOpen(false);
+          }}
         />
       )}
 
@@ -226,7 +229,16 @@ const BudgetPlanning = () => {
           goal={budgetPlan.savingsGoal}
           recommendedGoal={recommendedSavingsGoal}
           onClose={() => setIsSavingsModalOpen(false)}
-          onSave={handleSaveSavingsGoal}
+          onSave={(updatedGoal) => {
+            const updatedPlan = {
+              ...budgetPlan,
+              savingsGoal: updatedGoal,
+            };
+
+            setBudgetPlan(updatedPlan);
+            saveBudgetPlan(updatedPlan);
+            setIsSavingsModalOpen(false);
+          }}
         />
       )}
     </div>

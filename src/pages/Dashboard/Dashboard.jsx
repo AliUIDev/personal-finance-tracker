@@ -6,7 +6,7 @@ import Summary from "../Dashboard/Summary/Summary";
 import Footer from "./Footer/Footer";
 import CalendarSummary from "./CalendarSummary/CalendarSummary";
 import IncomeExpensesChart from "./IncomeExpensesChart/IncomeExpensesChart";
-import PieChartBox from "./PieChartBox/PieChartBox";
+import CategoryTrendChart from "./CategoryTrendChart/CategoryTrendChart";
 import Sidebar from "./Sidebar/Sidebar";
 
 import { getCurrentUser, getTransactions } from "../../services/storage";
@@ -113,9 +113,10 @@ function Dashboard() {
             <IncomeExpensesChart userBudget={userBudget} />
           </div>
 
-          <div className="pie-section">
-            <PieChartBox />
-            <div className="pie-bottom">
+          <div className="category-section">
+            <CategoryTrendChart />
+
+            <div className="category-bottom">
               <CalendarSummary />
             </div>
           </div>

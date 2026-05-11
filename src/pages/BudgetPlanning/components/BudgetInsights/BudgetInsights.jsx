@@ -1,3 +1,10 @@
+import {
+  AlertTriangle,
+  BarChart3,
+  CheckCircle2,
+  Gauge,
+  TrendingUp,
+} from "lucide-react";
 import { useCurrentUser } from "../../../../hooks/useCurrentUser";
 import { formatCurrency } from "../../../../utils/currency";
 import "./BudgetInsights.css";
@@ -6,46 +13,93 @@ const BudgetInsights = ({ totalSpent, monthlyBudget, categories }) => {
   const currentUser = useCurrentUser();
   const currency = currentUser?.currency || "USD";
 
-  const safeBudget = Number(monthlyBudget) || 0;
+  const plannedSpending = Number(monthlyBudget) || 0;
   const spentPercentage =
-    safeBudget > 0 ? Math.min((totalSpent / safeBudget) * 100, 100) : 0;
+    plannedSpending > 0
+      ? Math.min((totalSpent / plannedSpending) * 100, 100)
+      : 0;
 
-  const highestCategory = [...categories].sort((a, b) => b.spent - a.spent)[0];
+  const activeCategories = categories.filter((item) => item.spent > 0);
+  const highestCategory = [...activeCategories].sort(
+    (a, b) => b.spent - a.spent
+  )[0];
+
   const warningCategory = categories.find((item) => item.percentage >= 90);
 
   return (
     <div className="budget-insights-card">
       <div className="budget-insights-header">
-        <p className="budget-insights-label">Insights</p>
-        <h3>Budget Health</h3>
-        <span>Simple signals to help you stay in control</span>
+        <span className="budget-insights-main-icon">
+          <Gauge size={17} />
+        </span>
+
+        <div>
+          <p className="budget-insights-label">Insights</p>
+          <h3>Plan Health</h3>
+          <span>Simple signals to help you manage your planned spending</span>
+        </div>
       </div>
 
       <div className="insights-list">
         <div className="insight-item">
-          <strong>{Math.round(spentPercentage)}%</strong>
-          <p>of your monthly budget has been used.</p>
+          <span className="insight-icon">
+            <BarChart3 size={15} />
+          </span>
+
+          <div>
+            <strong>{Math.round(spentPercentage)}%</strong>
+            <p>of your planned monthly spending has been used.</p>
+          </div>
         </div>
 
-        {highestCategory && (
+        {highestCategory ? (
           <div className="insight-item">
-            <strong>{highestCategory.category}</strong>
-            <p>
-              is your highest spending category (
-              {formatCurrency(highestCategory.spent, currency)}).
-            </p>
+            <span className="insight-icon">
+              <TrendingUp size={15} />
+            </span>
+
+            <div>
+              <strong>{highestCategory.category}</strong>
+              <p>
+                is your highest spending category (
+                {formatCurrency(highestCategory.spent, currency)}).
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="insight-item">
+            <span className="insight-icon">
+              <TrendingUp size={15} />
+            </span>
+
+            <div>
+              <strong>No spending yet</strong>
+              <p>Your highest spending category will appear after transactions.</p>
+            </div>
           </div>
         )}
 
         {warningCategory ? (
           <div className="insight-item warning">
-            <strong>{warningCategory.category}</strong>
-            <p>is close to or over its planned limit.</p>
+            <span className="insight-icon">
+              <AlertTriangle size={15} />
+            </span>
+
+            <div>
+              <strong>{warningCategory.category}</strong>
+              <p>is close to or over its planned category limit.</p>
+            </div>
           </div>
         ) : (
           <div className="insight-item success">
-            <strong>Stable</strong>
-            <p>Your category budgets are under control.</p>
+            <span className="insight-icon">
+              <CheckCircle2 size={15} />
+            </span>
+
+            <div>
+              <strong>Stable</strong>
+              <p>Your category limits are currently under control.</p>
+            </div>
           </div>
         )}
       </div>

@@ -1,3 +1,4 @@
+import { Pencil, SlidersHorizontal, WalletCards, Gauge } from "lucide-react";
 import "./BudgetProgress.css";
 import { useCurrentUser } from "../../../../hooks/useCurrentUser";
 import { formatCurrency } from "../../../../utils/currency";
@@ -13,17 +14,20 @@ const BudgetProgress = ({ categories, onEditLimits }) => {
   return (
     <div className="budget-progress-card">
       <div className="budget-progress-header">
-        <div>
-          <p className="budget-progress-label">Spending Limits</p>
-          <h3>Category Budget Progress</h3>
-          <span>Track monthly spending against your planned limits</span>
+        <div className="budget-progress-title-row">
+          <span className="budget-progress-icon">
+            <SlidersHorizontal size={18} />
+          </span>
+
+          <div>
+            <p className="budget-progress-label">Spending Limits</p>
+            <h3>Category Limit Progress</h3>
+            <span>Track monthly spending against your planned category limits</span>
+          </div>
         </div>
 
-        <button
-          type="button"
-          className="edit-limits-btn"
-          onClick={onEditLimits}
-        >
+        <button type="button" className="edit-limits-btn" onClick={onEditLimits}>
+          <Pencil size={14} />
           Edit Limits
         </button>
       </div>
@@ -40,7 +44,11 @@ const BudgetProgress = ({ categories, onEditLimits }) => {
                 </p>
               </div>
 
-              <span className="progress-percent">
+              <span
+                className={`progress-percent ${
+                  item.percentage >= 90 ? "danger" : ""
+                }`}
+              >
                 {Math.round(item.percentage)}%
               </span>
             </div>
@@ -59,12 +67,18 @@ const BudgetProgress = ({ categories, onEditLimits }) => {
 
       <div className="budget-progress-footer">
         <div>
-          <span>Total planned</span>
+          <span className="budget-footer-icon">
+            <WalletCards size={16} />
+          </span>
+          <p>Total category limits</p>
           <strong>{formatCurrency(totalLimit, currency)}</strong>
         </div>
 
         <div>
-          <span>Remaining limit</span>
+          <span className="budget-footer-icon">
+            <Gauge size={16} />
+          </span>
+          <p>Remaining category limit</p>
           <strong>{formatCurrency(remainingLimit, currency)}</strong>
         </div>
       </div>
