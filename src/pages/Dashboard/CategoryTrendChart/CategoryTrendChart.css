@@ -127,22 +127,32 @@
   line-height: 1.2;
 }
 
-.category-trend-values span {
-  display: block;
+.category-trend-change {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
   font-size: 11px;
   font-weight: 800;
-  margin-top: 4px;
+  margin-top: 5px;
+  white-space: nowrap;
 }
 
-.category-trend-values span.up {
+.category-trend-change svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.category-trend-change.up {
   color: #b45309;
 }
 
-.category-trend-values span.down {
+.category-trend-change.down {
   color: #047857;
 }
 
-.category-trend-values span.same {
+.category-trend-change.same {
   color: #64748b;
 }
 
@@ -210,5 +220,10 @@
 
   .category-trend-values {
     text-align: left;
+  }
+
+  .category-trend-change {
+    justify-content: flex-start;
+    white-space: normal;
   }
 }

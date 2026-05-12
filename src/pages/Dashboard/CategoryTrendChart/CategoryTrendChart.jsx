@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import "./CategoryTrendChart.css";
 import mockTransactions from "../../../data/mock_transactions.json";
 import { getTransactions } from "../../../services/storage";
 import { useCurrentUser } from "../../../hooks/useCurrentUser";
-import { formatCurrency } from "../../../utils/currency";
 import { isPastOrToday } from "../../../utils/dateFilters";
 
 const categories = [
@@ -133,6 +133,17 @@ function CategoryTrendChart() {
     }).format(value);
   };
 
+  const formatTrendAmount = (amount) => {
+    const value = Number(amount) || 0;
+
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  };
+
   const getTrendClass = (difference) => {
     if (difference > 0) {
       return "up";
@@ -145,16 +156,26 @@ function CategoryTrendChart() {
     return "same";
   };
 
-  const getTrendText = (difference) => {
+  const getTrendIcon = (difference) => {
     if (difference > 0) {
-      return `Up ${formatCurrency(Math.abs(difference), currency)}`;
+      return <ArrowUp size={13} strokeWidth={2.8} />;
     }
 
     if (difference < 0) {
-      return `Down ${formatCurrency(Math.abs(difference), currency)}`;
+      return <ArrowDown size={13} strokeWidth={2.8} />;
     }
 
-    return "No change";
+    return <Minus size={13} strokeWidth={2.8} />;
+  };
+
+  const getTrendText = (difference) => {
+    if (difference === 0) {
+      return "No change compared to last month";
+    }
+
+    return `${formatTrendAmount(
+      Math.abs(difference)
+    )} compared to last month`;
   };
 
   return (
@@ -209,7 +230,8 @@ function CategoryTrendChart() {
 
                   <div className="category-trend-values">
                     <strong>{formatCompactAmount(category.currentAmount)}</strong>
-                    <span className={trendClass}>
+                    <span className={`category-trend-change ${trendClass}`}>
+                      {getTrendIcon(category.difference)}
                       {getTrendText(category.difference)}
                     </span>
                   </div>

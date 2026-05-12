@@ -91,7 +91,7 @@
   { "id": 88, "date": "2026-04-29", "category": "Travel", "type": "Taxi", "amount": 31.0, "description": "Evening ride" },
   { "id": 89, "date": "2026-04-30", "category": "Lifestyle", "type": "Dining Out", "amount": 118.0, "description": "Month-end dinner" },
 
-   { "id": 90, "date": "2026-05-01", "category": "Essentials", "type": "Rent", "amount": 1850.0, "description": "Monthly apartment rent" },
+  { "id": 90, "date": "2026-05-01", "category": "Essentials", "type": "Rent", "amount": 1850.0, "description": "Monthly apartment rent" },
   { "id": 91, "date": "2026-05-02", "category": "Essentials", "type": "Groceries", "amount": 342.0, "description": "Start of month groceries" },
   { "id": 92, "date": "2026-05-03", "category": "Health", "type": "Pharmacy", "amount": 58.0, "description": "Medicine purchase" },
   { "id": 93, "date": "2026-05-04", "category": "Education", "type": "Books", "amount": 86.0, "description": "Book purchase" },
@@ -102,5 +102,7 @@
   { "id": 98, "date": "2026-05-09", "category": "Health", "type": "Gym", "amount": 89.0, "description": "Gym membership" },
   { "id": 99, "date": "2026-05-10", "category": "Lifestyle", "type": "Dining Out", "amount": 128.0, "description": "Dinner outside" },
   { "id": 100, "date": "2026-05-11", "category": "Lifestyle", "type": "Entertainment", "amount": 140.0, "description": "Movie night" },
-  { "id": 101, "date": "2026-05-12", "category": "Essentials", "type": "Food", "amount": 46.0, "description": "Lunch order" }
+  { "id": 101, "date": "2026-05-12", "category": "Essentials", "type": "Food", "amount": 46.0, "description": "Lunch order" },
+  { "id": 102, "date": "2026-05-12", "category": "Travel", "type": "Taxi", "amount": 32.5, "description": "Taxi ride to city center" },
+  { "id": 103, "date": "2026-05-12", "category": "Other", "type": "Cloud Storage", "amount": 12.99, "description": "Cloud backup subscription" }
 ]
