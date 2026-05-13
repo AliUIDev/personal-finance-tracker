@@ -1,26 +1,16 @@
 import { useState, useRef, useEffect } from "react";
-import { Menu, Settings } from "lucide-react";
+import { Menu, UserRound } from "lucide-react";
 import SettingsMenu from "./SettingsMenu/SettingsMenu";
 import { getCurrentUser } from "../../../services/storage";
 import "./Header.css";
 
 function Header({ onMenuClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [userName, setUserName] = useState("Guest");
+  const [user, setUser] = useState(null);
   const menuRef = useRef(null);
 
   useEffect(() => {
-    const user = getCurrentUser();
-
-    if (user) {
-      if (user.name) {
-        setUserName(user.name);
-      } else if (user.displayName) {
-        setUserName(user.displayName);
-      } else if (user.email) {
-        setUserName(user.email.split("@")[0]);
-      }
-    }
+    setUser(getCurrentUser());
   }, []);
 
   useEffect(() => {
@@ -37,6 +27,16 @@ function Header({ onMenuClick }) {
     };
   }, []);
 
+  const userName =
+    user?.name || user?.displayName || user?.email?.split("@")[0] || "Guest";
+
+  const profileImage =
+    user?.profileImage ||
+    user?.avatarUrl ||
+    user?.photoURL ||
+    user?.picture ||
+    null;
+
   return (
     <header className="header">
       <div className="left">
@@ -46,17 +46,17 @@ function Header({ onMenuClick }) {
           onClick={onMenuClick}
           aria-label="Open sidebar"
         >
-          <Menu className="header-icon" strokeWidth={2.4} />
+          <Menu className="header-icon" strokeWidth={2.35} />
         </button>
       </div>
 
       <div className="header-center">
-        <h1 className="header-title">
-          Welcome back, {userName}
-        </h1>
+        <span className="header-label">BudgetBee</span>
+
+        <h1 className="header-title">Welcome back, {userName}</h1>
 
         <p className="header-subtitle">
-          Track your budget and spending in one place
+          Track your budget, spending, and monthly progress in one place
         </p>
       </div>
 
@@ -68,12 +68,14 @@ function Header({ onMenuClick }) {
           aria-label="Open account menu"
           aria-expanded={menuOpen}
         >
-          <Settings className="header-icon" strokeWidth={2.2} />
+          {profileImage ? (
+            <img src={profileImage} alt={userName} className="header-profile-img" />
+          ) : (
+            <UserRound className="header-profile-icon" strokeWidth={2.15} />
+          )}
         </button>
 
-        {menuOpen && (
-          <SettingsMenu onClose={() => setMenuOpen(false)} />
-        )}
+        {menuOpen && <SettingsMenu onClose={() => setMenuOpen(false)} />}
       </div>
     </header>
   );

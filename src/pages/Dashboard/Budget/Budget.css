@@ -1,27 +1,57 @@
 .budget {
   margin-top: 20px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 20px;
+  padding: 22px;
+  background: #ffffff;
+  border-radius: 24px;
 }
 
-.budget h3 {
-  font-size: 18px;
-  font-weight: 700;
+.budget-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
   margin-bottom: 18px;
-  color: #111827;
+}
+
+.budget-header h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: -0.04em;
+}
+
+.budget-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.budget-health-badge {
+  flex-shrink: 0;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .budget-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 22px;
 }
 
 .budget-summary-item {
-  padding: 12px 14px;
-  border-radius: 14px;
+  min-width: 0;
+  padding: 12px 10px;
+  border-radius: 15px;
   background: #f8fafc;
   display: flex;
   flex-direction: column;
@@ -29,26 +59,32 @@
 }
 
 .budget-summary-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b7280;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .budget-summary-item strong {
-  font-size: 16px;
-  color: #111827;
+  min-width: 0;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .budget-list {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 17px;
 }
 
 .budget-item {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
 .budget-item-top,
@@ -59,21 +95,42 @@
   gap: 12px;
 }
 
-.budget-category {
-  font-size: 14px;
-  font-weight: 600;
-  color: #111827;
+.budget-item-top>div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.budget-spent,
-.budget-percent {
+.budget-category {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.budget-item small {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.budget-spent {
+  flex-shrink: 0;
+  color: #64748b;
   font-size: 13px;
-  color: #6b7280;
+  font-weight: 700;
+}
+
+.budget-percent {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 650;
 }
 
 .progress-bar {
   width: 100%;
-  height: 10px;
+  height: 9px;
   background: #edf2f7;
   border-radius: 999px;
   overflow: hidden;
@@ -98,57 +155,73 @@
 
 @media (max-width: 768px) {
   .budget {
-    margin-top: 12px;
+    margin-top: 0;
     padding: 16px;
-    border-radius: 16px;
+    border-radius: 18px;
   }
 
-  .budget h3 {
-    font-size: 16px;
+  .budget-header {
     margin-bottom: 14px;
-    text-align: left;
+  }
+
+  .budget-header h3 {
+    font-size: 17px;
+  }
+
+  .budget-header p {
+    font-size: 12px;
+  }
+
+  .budget-health-badge {
+    padding: 6px 9px;
+    font-size: 10px;
   }
 
   .budget-summary {
-    grid-template-columns: 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
     margin-bottom: 18px;
   }
 
   .budget-summary-item {
-    padding: 12px;
-    border-radius: 12px;
+    padding: 10px 8px;
+    border-radius: 13px;
+  }
+
+  .budget-summary-label {
+    font-size: 10px;
   }
 
   .budget-summary-item strong {
-    font-size: 15px;
+    font-size: 12px;
   }
 
   .budget-list {
-    gap: 16px;
+    gap: 15px;
   }
 
   .budget-item {
     gap: 8px;
   }
 
-  .budget-item-top,
-  .budget-item-bottom {
-    flex-direction: row;
-    align-items: center;
-  }
-
   .progress-bar {
-    height: 9px;
+    height: 8px;
   }
 }
 
 @media (max-width: 480px) {
+  .budget-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .budget-health-badge {
+    align-self: flex-start;
+  }
 
   .budget-item-top,
   .budget-item-bottom {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+    flex-direction: row;
+    align-items: center;
   }
 }

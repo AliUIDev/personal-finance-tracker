@@ -5,14 +5,12 @@ import RecentTransactions from "../Dashboard/RecentTransactions/RecentTransactio
 import Summary from "../Dashboard/Summary/Summary";
 import Footer from "./Footer/Footer";
 import CalendarSummary from "./CalendarSummary/CalendarSummary";
-import IncomeExpensesChart from "./IncomeExpensesChart/IncomeExpensesChart";
+import SpendingTrendChart from "./SpendingTrendChart/SpendingTrendChart";
 import CategoryTrendChart from "./CategoryTrendChart/CategoryTrendChart";
 import Sidebar from "./Sidebar/Sidebar";
-
 import { getCurrentUser, getTransactions } from "../../services/storage";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { formatCurrency } from "../../utils/currency";
-
 import mockTransactions from "../../data/mock_transactions.json";
 import "./Dashboard.css";
 
@@ -110,7 +108,15 @@ function Dashboard() {
       <main className="dashboard-content">
         <section className="charts">
           <div className="line-chart">
-            <IncomeExpensesChart userBudget={userBudget} />
+            <SpendingTrendChart userBudget={userBudget} />
+          </div>
+
+          <div className="mobile-recent-panel">
+            <RecentTransactions />
+          </div>
+
+          <div className="mobile-budget-panel">
+            <Budget budget={userBudget} />
           </div>
 
           <div className="category-section">
@@ -137,7 +143,9 @@ function Dashboard() {
               />
             </div>
 
-            <Budget budget={userBudget} />
+            <div className="desktop-budget-panel">
+              <Budget budget={userBudget} />
+            </div>
           </div>
 
           <div className="aside-down-panel">

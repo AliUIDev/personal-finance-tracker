@@ -63,6 +63,9 @@ function Budget({ budget = 0 }) {
 
   const remainingBudget = Math.max(budget - totalSpent, 0);
 
+  const overallUsedPercentage =
+    budget > 0 ? Math.min((totalSpent / budget) * 100, 100) : 0;
+
   const categoriesOverview = Object.keys(categoryLimits).map((categoryName) => {
     const categorySpent = currentMonthTransactions
       .filter((transaction) => transaction.category === categoryName)
@@ -86,6 +89,7 @@ function Budget({ budget = 0 }) {
     return {
       categoryName,
       categorySpent,
+      categoryBudget,
       spentPercentage,
       statusClass,
     };
@@ -93,7 +97,16 @@ function Budget({ budget = 0 }) {
 
   return (
     <div className="budget-container budget">
-      <h3>Budget Overview</h3>
+      <div className="budget-header">
+        <div>
+          <h3>Budget Overview</h3>
+          <p>{formatCurrency(remainingBudget, currency)} left this month</p>
+        </div>
+
+        <span className="budget-health-badge">
+          {Math.round(overallUsedPercentage)}% used
+        </span>
+      </div>
 
       <div className="budget-summary">
         <div className="budget-summary-item">
@@ -116,7 +129,15 @@ function Budget({ budget = 0 }) {
         {categoriesOverview.map((categoryData) => (
           <div className="budget-item" key={categoryData.categoryName}>
             <div className="budget-item-top">
-              <span className="budget-category">{categoryData.categoryName}</span>
+              <div>
+                <span className="budget-category">
+                  {categoryData.categoryName}
+                </span>
+                <small>
+                  {formatCurrency(categoryData.categoryBudget, currency)} limit
+                </small>
+              </div>
+
               <span className="budget-spent">
                 {formatCurrency(categoryData.categorySpent, currency)}
               </span>
