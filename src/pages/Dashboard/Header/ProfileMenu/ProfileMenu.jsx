@@ -2,9 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { LogOut, Settings, UserRound } from "lucide-react";
 import { getCurrentUser, clearCurrentUser } from "../../../../services/storage";
-import "./SettingsMenu.css";
+import "./ProfileMenu.css";
 
-export default function SettingsMenu({ onClose }) {
+export default function ProfileMenu({ onClose }) {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
@@ -36,9 +36,9 @@ export default function SettingsMenu({ onClose }) {
   };
 
   return (
-    <div className="settings-menu">
-      <div className="settings-menu-user">
-        <div className="settings-menu-avatar">
+    <div className="profile-menu">
+      <div className="profile-menu-user">
+        <div className="profile-menu-avatar">
           {profileImage ? (
             <img src={profileImage} alt={displayName} />
           ) : (
@@ -46,15 +46,15 @@ export default function SettingsMenu({ onClose }) {
           )}
         </div>
 
-        <div className="settings-menu-user-info">
+        <div className="profile-menu-user-info">
           <h2>{displayName}</h2>
           <p>{displayEmail}</p>
         </div>
       </div>
 
-      <div className="settings-menu-list">
+      <div className="profile-menu-list">
         <button type="button" onClick={() => goTo("/settings/profile")}>
-          <span className="settings-menu-text">
+          <span className="profile-menu-text">
             <strong>Profile Settings</strong>
             <small>Manage account and profile image</small>
           </span>
@@ -63,7 +63,7 @@ export default function SettingsMenu({ onClose }) {
         </button>
 
         <button type="button" className="logout-item" onClick={handleLogout}>
-          <span className="settings-menu-text">
+          <span className="profile-menu-text">
             <strong>Log Out</strong>
           </span>
 
@@ -71,7 +71,7 @@ export default function SettingsMenu({ onClose }) {
         </button>
       </div>
 
-      <div className="menu-footer">
+      <div className="profile-menu-footer">
         <button type="button" onClick={() => goTo("/privacy-policy")}>
           Privacy Policy
         </button>

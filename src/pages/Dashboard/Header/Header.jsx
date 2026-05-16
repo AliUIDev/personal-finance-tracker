@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { Menu, UserRound } from "lucide-react";
-import SettingsMenu from "./SettingsMenu/SettingsMenu";
+import ProfileMenu from "./ProfileMenu/ProfileMenu";
 import { getCurrentUser } from "../../../services/storage";
 import "./Header.css";
 
 function Header({ onMenuClick }) {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
-  const menuRef = useRef(null);
+  const profileMenuRef = useRef(null);
 
   useEffect(() => {
     setUser(getCurrentUser());
@@ -15,8 +15,11 @@ function Header({ onMenuClick }) {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target)
+      ) {
+        setProfileMenuOpen(false);
       }
     };
 
@@ -60,13 +63,13 @@ function Header({ onMenuClick }) {
         </p>
       </div>
 
-      <div ref={menuRef} className="settings-wrapper">
+      <div ref={profileMenuRef} className="profile-menu-wrapper">
         <button
           type="button"
-          className={`settings-button ${menuOpen ? "active" : ""}`}
-          onClick={() => setMenuOpen((prev) => !prev)}
+          className={`profile-menu-button ${profileMenuOpen ? "active" : ""}`}
+          onClick={() => setProfileMenuOpen((prev) => !prev)}
           aria-label="Open account menu"
-          aria-expanded={menuOpen}
+          aria-expanded={profileMenuOpen}
         >
           {profileImage ? (
             <img src={profileImage} alt={userName} className="header-profile-img" />
@@ -75,7 +78,9 @@ function Header({ onMenuClick }) {
           )}
         </button>
 
-        {menuOpen && <SettingsMenu onClose={() => setMenuOpen(false)} />}
+        {profileMenuOpen && (
+          <ProfileMenu onClose={() => setProfileMenuOpen(false)} />
+        )}
       </div>
     </header>
   );
