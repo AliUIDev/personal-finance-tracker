@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Trash2, X } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Camera, Save } from "lucide-react";
 import {
   getCurrentUser,
   setCurrentUser,
@@ -8,7 +8,9 @@ import {
   saveUsers,
   clearCurrentUser,
 } from "../../../services/storage";
-import CurrencySelect from "./components/CurrencySelect";
+import UserAvatar from "../../../components/UserAvatar/UserAvatar";
+import CurrencySelect from "./components/CurrencySelect/CurrencySelect";
+import DangerZone from "./components/DangerZone/DangerZone";
 import "./ProfileSettings.css";
 
 const currencies = [
@@ -66,15 +68,23 @@ const currencies = [
 
 function ProfileSettings() {
   const navigate = useNavigate();
-
   const [originalEmail, setOriginalEmail] = useState("");
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [saveStatus, setSaveStatus] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     currency: "USD",
+    profileImage: "",
+    profileImagePosition: "center",
   });
+
+  const selectedCurrency = useMemo(
+    () =>
+      currencies.find((currency) => currency.code === formData.currency) ||
+      currencies[0],
+    [formData.currency]
+  );
 
   useEffect(() => {
     const user = getCurrentUser();
@@ -82,19 +92,46 @@ function ProfileSettings() {
     if (user) {
       setOriginalEmail(user.email || "");
       setFormData({
-        name: user.name || "",
+        name: user.name || user.displayName || "",
         email: user.email || "",
         currency: user.currency || "USD",
+        profileImage:
+          user.profileImage ||
+          user.avatarUrl ||
+          user.photoURL ||
+          user.picture ||
+          "",
+        profileImagePosition: user.profileImagePosition || "center",
       });
     }
   }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+    setSaveStatus("");
 
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleImageChange = ({ image, position }) => {
+    setSaveStatus("");
+
+    setFormData((prev) => ({
+      ...prev,
+      profileImage: image,
+      profileImagePosition: position,
+    }));
+  };
+
+  const handleCurrencyChange = (currency) => {
+    setSaveStatus("");
+
+    setFormData((prev) => ({
+      ...prev,
+      currency,
     }));
   };
 
@@ -108,6 +145,8 @@ function ProfileSettings() {
       name: formData.name.trim(),
       email: formData.email.trim(),
       currency: formData.currency,
+      profileImage: formData.profileImage,
+      profileImagePosition: formData.profileImagePosition,
     };
 
     const updatedUsers = users.map((user) =>
@@ -117,18 +156,19 @@ function ProfileSettings() {
     saveUsers(updatedUsers);
     setCurrentUser(updatedUser);
     setOriginalEmail(updatedUser.email);
+    setSaveStatus("Saved");
+
     window.dispatchEvent(new Event("budgetbee:user-updated"));
   };
 
   const handleDelete = async () => {
     const users = await getUsers();
-
-    const updatedUsers = users.filter(
-      (user) => user.email !== originalEmail
-    );
+    const updatedUsers = users.filter((user) => user.email !== originalEmail);
 
     saveUsers(updatedUsers);
     clearCurrentUser();
+
+    window.dispatchEvent(new Event("budgetbee:user-updated"));
     navigate("/login");
   };
 
@@ -139,128 +179,122 @@ function ProfileSettings() {
           type="button"
           className="profile-back-btn"
           onClick={() => navigate("/dashboard")}
+          aria-label="Back to dashboard"
         >
-          <ArrowLeft size={18} />
-          <span>Back to Dashboard</span>
+          <ArrowLeft size={24} />
         </button>
 
         <div className="profile-card">
           <header className="profile-header">
-            <p>BudgetBee Account</p>
-            <h1>Your Profile</h1>
-            <span>
-              Manage your identity and preferred currency for cleaner financial
-              tracking.
-            </span>
+            <div>
+              <p>BudgetBee Account</p>
+              <h1>Your Profile</h1>
+              <span>
+                Manage your identity, profile image, and preferred currency for
+                cleaner financial tracking.
+              </span>
+            </div>
           </header>
 
-          <form className="profile-form" onSubmit={handleSave}>
-            <label className="profile-field">
-              <span>Full Name</span>
-              <input
-                className="profile-input"
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-            </label>
-
-            <label className="profile-field">
-              <span>Email Address</span>
-              <input
-                className="profile-input"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </label>
-
-            <CurrencySelect
-              label="Currency"
-              value={formData.currency}
-              options={currencies}
-              onChange={(currency) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  currency,
-                }))
-              }
+          <section className="profile-identity-card">
+            <UserAvatar
+              user={formData}
+              size="lg"
+              editable
+              onImageChange={handleImageChange}
             />
 
-            <button type="submit" className="profile-save-btn">
-              Save Changes
-            </button>
+            <div className="profile-identity-info">
+              <div className="profile-status-row">
+                <p>Personal Workspace</p>
+                <span>
+                  <BadgeCheck size={14} />
+                  Active
+                </span>
+              </div>
+
+              <h2>{formData.name || "Your profile"}</h2>
+              <small>{formData.email || "No email added yet"}</small>
+
+              <div className="profile-image-note">
+                <Camera size={15} />
+                Upload a custom image now. Social login images can be used
+                later when backend auth is added.
+              </div>
+            </div>
+          </section>
+
+          <form className="profile-form" onSubmit={handleSave}>
+            <section className="profile-section">
+              <div className="profile-section-header">
+                <h3>Profile Information</h3>
+                <p>These details define your local BudgetBee workspace.</p>
+              </div>
+
+              <div className="profile-fields-grid">
+                <label className="profile-field">
+                  <span>Full Name</span>
+                  <input
+                    className="profile-input"
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </label>
+
+                <label className="profile-field">
+                  <span>Email Address</span>
+                  <input
+                    className="profile-input"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section className="profile-section">
+              <div className="profile-section-header">
+                <h3>Financial Preferences</h3>
+                <p>
+                  Your dashboard, analytics, budgets, and transaction values use
+                  this currency.
+                </p>
+              </div>
+
+              <CurrencySelect
+                label="Currency"
+                value={formData.currency}
+                options={currencies}
+                onChange={handleCurrencyChange}
+              />
+
+              <div className="currency-preview-card">
+                <p>
+                  BudgetBee will format your financial workspace using{" "}
+                  <strong>{selectedCurrency.name}</strong>.
+                </p>
+              </div>
+            </section>
+
+            <div className="profile-actions-row">
+              {saveStatus && <span className="profile-save-status">Saved</span>}
+
+              <button type="submit" className="profile-save-btn">
+                <Save size={18} />
+                Save Changes
+              </button>
+            </div>
           </form>
 
-          <div className="danger-zone">
-            <div className="danger-icon">
-              <Trash2 size={18} />
-            </div>
-
-            <div className="danger-content">
-              <h2>Delete BudgetBee Profile</h2>
-              <p>
-                Delete this profile permanently and clear its saved workspace
-                data.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              className="delete-btn"
-              onClick={() => setShowDeleteModal(true)}
-            >
-              <Trash2 size={16} />
-              Delete Profile
-            </button>
-          </div>
+          <DangerZone onDelete={handleDelete} />
         </div>
       </section>
-
-      {showDeleteModal && (
-        <div
-          className="modal-overlay"
-          onClick={() => setShowDeleteModal(false)}
-        >
-          <div className="modal-box" onClick={(event) => event.stopPropagation()}>
-            <button
-              type="button"
-              className="modal-close"
-              onClick={() => setShowDeleteModal(false)}
-            >
-              <X size={18} />
-            </button>
-
-            <h3>Delete this profile?</h3>
-            <p>
-              This will permanently remove your BudgetBee profile from this
-              browser. This action cannot be undone.
-            </p>
-
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="confirm-delete"
-                onClick={handleDelete}
-              >
-                Yes, Delete
-              </button>
-
-              <button
-                type="button"
-                className="cancel-delete"
-                onClick={() => setShowDeleteModal(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

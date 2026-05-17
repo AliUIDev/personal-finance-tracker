@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { LogOut, Settings, UserRound } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { getCurrentUser, clearCurrentUser } from "../../../../services/storage";
+import UserAvatar from "../../../../components/UserAvatar/UserAvatar";
 import "./ProfileMenu.css";
 
 export default function ProfileMenu({ onClose }) {
@@ -9,20 +10,21 @@ export default function ProfileMenu({ onClose }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setUser(getCurrentUser());
+    const loadUser = () => setUser(getCurrentUser());
+
+    loadUser();
+
+    window.addEventListener("budgetbee:user-updated", loadUser);
+
+    return () => {
+      window.removeEventListener("budgetbee:user-updated", loadUser);
+    };
   }, []);
 
   const displayName =
     user?.name || user?.displayName || user?.email?.split("@")[0] || "Guest User";
 
   const displayEmail = user?.email || "No email";
-
-  const profileImage =
-    user?.profileImage ||
-    user?.avatarUrl ||
-    user?.photoURL ||
-    user?.picture ||
-    null;
 
   const goTo = (path) => {
     onClose?.();
@@ -38,13 +40,7 @@ export default function ProfileMenu({ onClose }) {
   return (
     <div className="profile-menu">
       <div className="profile-menu-user">
-        <div className="profile-menu-avatar">
-          {profileImage ? (
-            <img src={profileImage} alt={displayName} />
-          ) : (
-            <UserRound size={23} strokeWidth={2.15} />
-          )}
-        </div>
+        <UserAvatar user={user} size="sm" />
 
         <div className="profile-menu-user-info">
           <h2>{displayName}</h2>
@@ -75,6 +71,7 @@ export default function ProfileMenu({ onClose }) {
         <button type="button" onClick={() => goTo("/privacy-policy")}>
           Privacy Policy
         </button>
+
         <button type="button" onClick={() => goTo("/terms-of-use")}>
           Terms of Use
         </button>
